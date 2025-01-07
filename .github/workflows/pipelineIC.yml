@@ -25,7 +25,13 @@ jobs:
       
            
             - name: Install Dependencies
-              run: npm install
+              run: |
+                npm install 
+                if [ -d "./functions" ]; then
+                 cd ./functions
+                  npm install 
+                cd ..
+                fi
       
             
             - name: Configure SonarCloud Scanner
@@ -49,19 +55,38 @@ jobs:
            
             - name: Checkout Code
               uses: actions/checkout@v3
+            
+            - name: Install OWASP Dependency-Check
+              run: |
+                curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
+                unzip dependency-check.zip -d dependency-check
+                chmod +x dependency-check/bin/dependency-check.sh
       
-          
+           
             - name: Run OWASP Dependency-Check
               run: |
-                docker run --rm \
-                -v $(pwd):/labfinal \
-                -v $(pwd)/odc-reports:/report \
-                owasp/dependency-check \
+                dependency-check/bin/dependency-check.sh \
                 --project "ALVAREZLEONARDO2392_labfinal" \
-                --scan /labfinal \
+                --scan . \
                 --format "ALL" \
-                --out /report
+                --out odc-reports \
                 --nvdApiKey ${{ secrets.NVD_API_KEY }}
+
+
+
+
+          
+            # - name: Run OWASP Dependency-Check
+            #   run: |
+            #     docker run --rm \
+            #     -v $(pwd):/labfinal \
+            #     -v $(pwd)/odc-reports:/report \
+            #     owasp/dependency-check \
+            #     --project "ALVAREZLEONARDO2392_labfinal" \
+            #     --scan /labfinal \
+            #     --format "ALL" \
+            #     --out /report
+            #     --nvdApiKey ${{ secrets.NVD_API_KEY }}
       
             
             - name: Upload Dependency-Check Report
