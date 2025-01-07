@@ -42,28 +42,33 @@ jobs:
             - name: Run SonarCloud Scanner
               run: npx sonar-scanner
         SCA:
-            runs-on: ubuntu-24.04
-            needs: SAST
+          runs-on: ubuntu-24.04
+          needs: SAST
+      
+          steps:
+           
+            - name: Checkout Code
+              uses: actions/checkout@v3
+      
+          
+            - name: Run OWASP Dependency-Check
+              run: |
+                docker run --rm \
+                -v $(pwd):/src \
+                -v $(pwd)/odc-reports:/report \
+                owasp/dependency-check \
+                --project "ALVAREZLEONARDO2392_labfinal" \
+                --scan /src \
+                --format "ALL" \
+                --out /report
+      
             
-            steps:
-                  # chequeo de código
-                  - name: Checkout Code
-                    uses: actions/checkout@v3
-            
-                  # owasp dependency check
-                  - name: Run OWASP Dependency-Check
-                    uses: actions/owasp-dependency-check@v3
-                    with:
-                      project: "ALVAREZLEONARDO2392_labfinal"
-                      scan: "./" # proyecto path
-                      format: "ALL" # reportes para todos los formatos json, xml, etc.
-            
-                  # Step 3: report
-                  - name: Upload Dependency-Check Report
-                    uses: actions/upload-artifact@v3
-                    with:
-                      name: dependency-check-report
-                      path: dependency-check-report.html
+            - name: Upload Dependency-Check Report
+              uses: actions/upload-artifact@v3
+              with:
+                name: dependency-check-report
+                path: odc-reports/dependency-check-report.html
+      
 
 # jobs:
 #   SAST:
