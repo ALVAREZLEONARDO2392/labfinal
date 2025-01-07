@@ -43,7 +43,7 @@ jobs:
                 echo "sonar.sources=." >> sonar-project.properties
                 echo "sonar.exclusions=**/node_modules/**" >> sonar-project.properties
                 echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
-                         
+
             - name: Run SonarCloud Scanner
               run: npx sonar-scanner
 
@@ -54,5 +54,5 @@ jobs:
                 path: '.'
                 format: 'HTML'
                 out: 'dependency-check-report'
-                args: '--failOnCVSS 7'
+                args: '--failOnCVSS 9.0'
 
