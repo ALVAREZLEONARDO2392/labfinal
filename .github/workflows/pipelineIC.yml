@@ -43,19 +43,16 @@ jobs:
                 echo "sonar.sources=." >> sonar-project.properties
                 echo "sonar.exclusions=**/node_modules/**" >> sonar-project.properties
                 echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
-      
-           
+                         
             - name: Run SonarCloud Scanner
               run: npx sonar-scanner
-        SCA:
-          runs-on: ubuntu-latest
-          needs: SAST
-          name: Run the SCA scan on the source code
-          steps:
-            - uses: actions/checkout@master
-            - name: RunSnyk to check for vulnerabilities
-              uses: snyk/actions/maven@master
-              continue-on-error: true
-              env:
-                SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+            - name: Run OWASP Dependency-Check
+              uses: dependency-check/Dependency-Check_Action@main
+              with:
+                project: 'labfinal'
+                path: '.'
+                format: 'HTML'
+                out: 'dependency-check-report'
+                args: '--failOnCVSS 7'
 
