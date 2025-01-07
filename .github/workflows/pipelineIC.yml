@@ -27,7 +27,22 @@ jobs:
         run: |
           if [ -f "package-lock.json" ]; then
             echo "Encontró el archivo"
-          else
-            echo "no se encontró archivo build.gradle"
+            echo "Verificando configuración del plugin sonar"
+            if ! grep -q 'id "org.sonarqube" version "3.3"' package-lock.json; then
+              sed -i '/id '\''java'\''/a \ \ \ \ id '\''org.sonarqube'\'' version '\' version '\''3.3'\''' package-lock.json
+              echo "Plugin de Sonarcloud añadido en package json"
+            else
+              echo "Plugin de sonarcloud ya está configurado en package-lock.json"
+            fi
+
+
+
+
+
+
+            
+            else
+            echo "no se encontró archivo package-lock.json"
+            
             exit 1
           fi
