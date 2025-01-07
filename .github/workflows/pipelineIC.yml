@@ -25,7 +25,7 @@ jobs:
         env:
           SONAR_TOKEN: $${{ secrets.SONAR_TOKEN }}
         run: |
-          if [ -f "build.gradle" ]; then
+          if [ -f "package-lock.json" ]; then
             echo "Encontró el archivo"
           else
             echo "no se encontró archivo build.gradle"
