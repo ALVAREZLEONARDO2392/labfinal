@@ -13,21 +13,21 @@ jobs:
           runs-on: ubuntu-24.04
       
           steps:
-            # Step 1: Checkout the repository
+            
             - name: Checkout Code
               uses: actions/checkout@v3
       
-            # Step 2: Set up Node.js environment
+           
             - name: Set up Node.js
               uses: actions/setup-node@v3
               with:
-                node-version: '16' # Adjust Node.js version to match your project requirements
+                node-version: '16' 
       
-            # Step 3: Install project dependencies
+           
             - name: Install Dependencies
               run: npm install
       
-            # Step 4: Configure SonarCloud Scanner
+            
             - name: Configure SonarCloud Scanner
               run: |
                 echo "sonar.projectKey=ALVAREZLEONARDO2392_labfinal" >> sonar-project.properties
@@ -38,7 +38,7 @@ jobs:
                 echo "sonar.exclusions=**/node_modules/**" >> sonar-project.properties
                 echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
       
-            # Step 5: Run SonarCloud Scanner
+           
             - name: Run SonarCloud Scanner
               run: npx sonar-scanner
         SCA:
@@ -61,6 +61,7 @@ jobs:
                 --scan /src \
                 --format "ALL" \
                 --out /report
+                --nvdApiKey ${{ secrets.NVD_API_KEY }}
       
             
             - name: Upload Dependency-Check Report
