@@ -62,16 +62,16 @@ jobs:
                 curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
                 unzip dependency-check.zip
                 chmod +x dependency-check*/bin/dependency-check.sh
-
             
             - name: Run OWASP Dependency-Check
-              run: |
-                dependency-check*/bin/dependency-check.sh \
-                --project "ALVAREZLEONARDO2392_labfinal" \
-                --scan . \
-                --format "ALL" \
-                --out odc-reports \
-                --nvdApiKey ${{ secrets.NVD_API_KEY }}
+              env:
+                  NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+                run: |
+                  dependency-check*/bin/dependency-check.sh \
+                  --project "ALVAREZLEONARDO2392_labfinal" \
+                  --scan . \
+                  --format "ALL" \
+                  --out odc-reports
 
 
 
