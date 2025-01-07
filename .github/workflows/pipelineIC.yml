@@ -52,20 +52,21 @@ jobs:
           needs: SAST
       
           steps:
-           
+            
             - name: Checkout Code
               uses: actions/checkout@v3
-            
+
+           
             - name: Install OWASP Dependency-Check
               run: |
                 curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.0/dependency-check-8.4.0-release.zip
-                unzip dependency-check.zip -d dependency-check
-                chmod +x dependency-check/bin/dependency-check.sh
-      
-           
+                unzip dependency-check.zip
+                chmod +x dependency-check*/bin/dependency-check.sh
+
+            
             - name: Run OWASP Dependency-Check
               run: |
-                dependency-check/bin/dependency-check.sh \
+                dependency-check*/bin/dependency-check.sh \
                 --project "ALVAREZLEONARDO2392_labfinal" \
                 --scan . \
                 --format "ALL" \
