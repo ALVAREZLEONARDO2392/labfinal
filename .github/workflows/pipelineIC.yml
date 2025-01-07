@@ -54,11 +54,11 @@ jobs:
             - name: Run OWASP Dependency-Check
               run: |
                 docker run --rm \
-                -v $(pwd):/src \
+                -v $(pwd):/labfinal \
                 -v $(pwd)/odc-reports:/report \
                 owasp/dependency-check \
                 --project "ALVAREZLEONARDO2392_labfinal" \
-                --scan /src \
+                --scan /labfinal \
                 --format "ALL" \
                 --out /report
                 --nvdApiKey ${{ secrets.NVD_API_KEY }}
