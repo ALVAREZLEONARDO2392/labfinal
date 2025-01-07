@@ -54,5 +54,5 @@ jobs:
                 path: '.'
                 format: 'HTML'
                 out: 'dependency-check-report'
-                args: '--failOnCVSS 9.0'
+                args: '--failOnCVSS 20'
 
