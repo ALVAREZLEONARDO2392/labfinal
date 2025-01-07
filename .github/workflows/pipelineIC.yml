@@ -30,7 +30,7 @@ jobs:
             # Step 4: Configure SonarCloud Scanner
             - name: Configure SonarCloud Scanner
               run: |
-                echo "sonar.projectKey=LABFINAL" >> sonar-project.properties
+                echo "sonar.projectKey=ALVAREZLEONARDO2392_labfinal" >> sonar-project.properties
                 echo "sonar.organization=your_organization" >> sonar-project.properties
                 echo "sonar.host.url=https://sonarcloud.io" >> sonar-project.properties
                 echo "sonar.login=${{ secrets.SONAR_TOKEN }}" >> sonar-project.properties
