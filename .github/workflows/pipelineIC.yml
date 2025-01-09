@@ -77,10 +77,7 @@ jobs:
           steps:
             - name: List Files in Root
               run: ls -la
-
-            - name: List Files in Docker Directory
-              run: ls -la ./docker
-            
+         
             - name: Change Directory to `src`
               run: cd src
       
