@@ -78,9 +78,7 @@ jobs:
             - name: List Files in Root
               run: ls -la
          
-            - name: Change Directory to `src`
-              run: cd src
-      
+              
             - name: Change Directory to Current Directory `.`
               run: cd .
             
