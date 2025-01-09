@@ -81,10 +81,15 @@ jobs:
             - name: List Files in Docker Directory
               run: ls -la ./docker
             
+            - name: Change Directory to `src`
+              run: cd src
+      
+            - name: Change Directory to Current Directory `.`
+              run: cd .
             
             - name: Build Docker Image
               run: |
-                docker build -t labfinal1 -f ./docker/Dockerfile .
+                docker build -t labfinal1 -f ./Dockerfile .
   
             - name: Run Trivy Scan
               uses: aquasecurity/trivy-action@0.28.0
