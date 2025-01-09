@@ -75,6 +75,13 @@ jobs:
           needs: Dependency-Check
           
           steps:
+            - name: List Files in Root
+              run: ls -la
+
+            - name: List Files in Docker Directory
+              run: ls -la ./docker
+            
+            
             - name: Build Docker Image
               run: |
                 docker build -t labfinal1 -f ./docker/Dockerfile .
