@@ -104,13 +104,7 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
 
-            - name: Scan Docker image with Trivy
-              uses: aquasecurity/trivy-action@master
-              with:
-                    image-ref: rene0311/my-docker-hub-repository:${{ steps.meta.outputs.tags }}
-                    format: 'table'
-                    ignore-unfixed: true
-                    vuln-type: 'os,library'
+            
 
             - name: Push Docker image to Docker Hub
               if: success()
@@ -123,7 +117,13 @@ jobs:
                       tags: ${{ steps.meta.outputs.tags }}
                       labels: ${{ steps.meta.outputs.labels }}
 
-
+            - name: Scan Docker image with Trivy
+              uses: aquasecurity/trivy-action@master
+              with:
+                      image-ref: rene0311/my-docker-hub-repository:${{ steps.meta.outputs.tags }}
+                      format: 'table'
+                      ignore-unfixed: true
+                      vuln-type: 'os,library'
 
 
 
