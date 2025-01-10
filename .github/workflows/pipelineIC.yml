@@ -70,9 +70,10 @@ jobs:
                   path: dependency-check-report/dependency-check-report.html
 
         build:
-          name: push docker image to docker hub
-          runs-on: ubuntu-latest
-          steps:
+              name: push docker image to docker hub
+              runs-on: ubuntu-latest
+              
+              steps:
                 - uses: actions/checkout@v2
                 - name: login to docker hub
                   id: docker-hub
@@ -85,10 +86,10 @@ jobs:
                   id: build-docker-image
                   run: |
                     ls -la 
-                    docker build . -f Dockerfile -t cf86b7326896
+                    docker build . -f Dockerfile -t dhruvin30/labfinal:latest
                 - name: push the docker image
                   id: push-docker-image
-                  run: docker push ${{secrets.DOCKERHUB_USERNAME}}/cf86b7326896
+                  run: docker push ${{secrets.DOCKERHUB_USERNAME}}/labfinal:latest
 
 
 
