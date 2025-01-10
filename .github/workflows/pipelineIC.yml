@@ -94,22 +94,45 @@ jobs:
               with:
                 images: rene0311/my-docker-hub-repository
 
-            - name: Build and push Docker image
+            - name: Build Docker image
+              id: build
+              uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  push: false
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+
+            - name: Scan Docker image with Trivy
+              uses: aquasecurity/trivy-action@master
+              with:
+                    image-ref: rene0311/my-docker-hub-repository:${{ steps.meta.outputs.tags }}
+                    format: 'table'
+                    ignore-unfixed: true
+                    vuln-type: 'os,library'
+
+            - name: Push Docker image to Docker Hub
+              if: success()
               id: push
               uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
               with:
-                context: .
-                file: ./Dockerfile
-                push: true
-                tags: ${{ steps.meta.outputs.tags }}
-                labels: ${{ steps.meta.outputs.labels }}
+                      context: .
+                      file: ./Dockerfile
+                      push: true
+                      tags: ${{ steps.meta.outputs.tags }}
+                      labels: ${{ steps.meta.outputs.labels }}
 
-            - name: Generate artifact attestation
-              uses: actions/attest-build-provenance@v2
-              with:
-                subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-                subject-digest: ${{ steps.push.outputs.digest }}
-                push-to-registry: true
+
+
+
+
+            # - name: Generate artifact attestation
+            #   uses: actions/attest-build-provenance@v2
+            #   with:
+            #     subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+            #     subject-digest: ${{ steps.push.outputs.digest }}
+            #     push-to-registry: true
 
 
 
