@@ -157,7 +157,7 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                                   name: dependency-check-report
-                                  path: dependency-check-report/dependency-check-report.htm
+                                  path: dependency-check-report/dependency-check-report.html
                            
             - name: Analizar el informe HTML de Dependency-Check por severidad
               run: |
