@@ -82,11 +82,11 @@ jobs:
         Dependency-Check:
 
           runs-on: ubuntu-latest
-          needs: SAST
+
 
           steps:
 
-            - name: Run OWASP Dependency-Check
+            - name: Run OWASP Dependency-Check JSON
               uses: dependency-check/Dependency-Check_Action@main
               with:
                 project: 'labfinal'
@@ -94,6 +94,18 @@ jobs:
                 format: 'JSON'
                 out: 'dependency-check-report'
                 args: '--failOnCVSS 20' 
+          
+            - name: Show Key Information from JSON Report
+              run: |
+                  REPORT="dependency-check-report/dependency-check-report.json"
+              
+                  if [ ! -f "$REPORT" ]; then
+                    echo "No se encuentra el reporte $REPORT"
+                    exit 1
+                  fi
+              
+                  echo "Vulnerabilidades encontradas:"
+                  jq '.dependencies[] | {file: .fileName, vulnerabilities: .vulnerabilities}' "$REPORT"
                 
             - name: Analisis dependency check
               run: |
@@ -111,12 +123,20 @@ jobs:
                           echo "No se encuentra vulnerabilidades media-alta."
                         fi
 
+            # - name: Run OWASP Dependency-Check HTML
+            #   uses: dependency-check/Dependency-Check_Action@main
+            #   with:
+            #               project: 'labfinal'
+            #               path: '.'
+            #               format: 'JSON'
+            #               out: 'dependency-check-report'
+            #               args: '--failOnCVSS 20' 
            ###### art     
-            - name: Upload Dependency-Check Report
-              uses: actions/upload-artifact@v3
-              with:
-                  name: dependency-check-report
-                  path: dependency-check-report/dependency-check-report.html
+            # - name: Upload Dependency-Check Report
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #       name: dependency-check-report
+            #       path: dependency-check-report/dependency-check-report.html
             
             
 
