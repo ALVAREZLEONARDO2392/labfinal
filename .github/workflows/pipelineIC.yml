@@ -104,32 +104,19 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
             
-                  
-            - name: List Docker Images
-              run: docker images
-                
-            - name: Analyze Docker Image with Docker Scout (Debug)
-              run: |
-                    docker scout --verbose analyze rene0311/my-docker-hub-repository:latest
-              env:
-                    DOCKER_BUILDKIT: 1
-                    DOCKER_CLI_EXPERIMENTAL: enabled   
-                       
-            - name: Install Docker Scout
-              run: |
-                    curl -fsSL https://get.docker.com | sh
-                    docker scout --version
-            
-            - name: Analyze Docker Image with Docker Scout
-              run: |
-                    docker scout analyze rene0311/my-docker-hub-repository:${{ steps.meta.outputs.tags }} --format markdown > scout-report.md
-            
-            - name: Upload Docker Scout Report
+            - name: Scan Docker image with Trivy
+              uses: aquasecurity/trivy-action@master
+              with:
+                    image-ref: rene0311/my-docker-hub-repository:${{ steps.meta.outputs.tags }}
+                    format: 'table'
+                    exit-code: '1'
+                    ignore-unfixed: true
+          
+            - name: Upload Trivy Report
               uses: actions/upload-artifact@v3
               with:
-                    name: docker-scout-report
-                    path: scout-report.md
-
+                    name: trivy-scan-report
+                    path: trivy-report.txt
 
             # - name: Generate artifact attestation
             #   uses: actions/attest-build-provenance@v2
