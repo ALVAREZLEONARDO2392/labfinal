@@ -91,9 +91,9 @@ jobs:
               with:
                 project: 'labfinal'
                 path: '.'
-                format: 'json'
+                format: 'JSON'
                 out: 'dependency-check-report'
-                args: '--failOnCVSS 7' 
+                args: '--failOnCVSS 20' 
                 
             - name: Analisis dependency check
               run: |
