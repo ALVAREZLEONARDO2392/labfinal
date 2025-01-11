@@ -170,7 +170,11 @@ jobs:
                     echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
                     docker scout quickview
                     docker scout cves --output json > scout-report.json
-           
+                    
+                    if ! command -v jq &> /dev/null; then
+                      sudo apt-get update && sudo apt-get install -y jq
+                    fi
+                    
                     CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="CRITICAL")] | length' scout-report.json)
                     HIGH=$(jq '[.vulnerabilities[] | select(.severity=="HIGH")] | length' scout-report.json)
                     MEDIUM=$(jq '[.vulnerabilities[] | select(.severity=="MEDIUM")] | length' scout-report.json)
