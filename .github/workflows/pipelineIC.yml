@@ -144,20 +144,20 @@ jobs:
 
 
                           
-            # - name: Run OWASP Dependency-Check HTML
-            #   uses: dependency-check/Dependency-Check_Action@main
-            #   with:
-            #               project: 'labfinal'
-            #               path: '.'
-            #               format: 'JSON'
-            #               out: 'dependency-check-report'
-            #               args: '--failOnCVSS 20' 
-           ###### art     
-            # - name: Upload Dependency-Check Report
-            #   uses: actions/upload-artifact@v3
-            #   with:
-            #       name: dependency-check-report
-            #       path: dependency-check-report/dependency-check-report.html
+            - name: Run OWASP Dependency-Check HTML
+              uses: dependency-check/Dependency-Check_Action@main
+              with:
+                            project: 'labfinal'
+                            path: '.'
+                            format: 'HTML'
+                            out: 'dependency-check-report'
+                            args: '--failOnCVSS 20' 
+          #  ###### art     
+            - name: Upload Dependency-Check Report
+              uses: actions/upload-artifact@v3
+              with:
+                    name: dependency-check-report
+                    path: dependency-check-report/dependency-check-report.html
             
             
 
