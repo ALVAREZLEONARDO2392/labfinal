@@ -77,73 +77,7 @@ jobs:
                   echo "Se encuentran vulnerabilidades: $VULNERABILITIES. Botando pipeline...."
                   exit 1
                 fi
-
-          
-        # Dependency-Check:
-
-        #   runs-on: ubuntu-latest
-        #   needs: SAST
-
-        #   steps:
-
-            # - name: Run OWASP Dependency-Check JSON
-            #   uses: dependency-check/Dependency-Check_Action@main
-            #   with:
-            #     project: 'labfinal'
-            #     path: '.'
-            #     format: 'JSON'
-            #     out: 'dependency-check-report'
-            #     args: '--failOnCVSS 20' 
-          
-            # - name: Show Key Information from JSON Report
-            #   run: |
-            #       REPORT="dependency-check-report/dependency-check-report.json"
-              
-            #       if [ ! -f "$REPORT" ]; then
-            #         echo "No se encuentra el reporte $REPORT"
-            #         exit 1
-            #       fi
-              
-            #       echo "Vulnerabilidades encontradas:"
-            #       jq '.dependencies[] | {file: .fileName, vulnerabilities: .vulnerabilities}' "$REPORT"
-                
-            # - name: Analisis dependency check
-            #   run: |
-                        
-            #             REPORT="dependency-check-report/dependency-check-report.json"
-                    
-                        
-            #             ISSUES=$(jq '[.dependencies[].vulnerabilities[] | select(.cvssScore >= 4 and .cvssScore <= 10)] | length' "$REPORT")
-                    
-                       
-            #             if [ "$ISSUES" -gt 0 ]; then
-            #               echo "Se encuentran $ISSUES vulnerabilidades con CVSS entre 4 y 10."
-            #               exit 1
-            #             else
-            #               echo "No se encuentra vulnerabilidades media-alta."
-            #             fi
-            # - name: Subir informe (JSON)
-            #   uses: actions/upload-artifact@v3
-            #   with:
-            #               name: dependency-check-report-json
-            #               path: dependency-check-report/dependency-check-report.json
-            # - name: Summarize Vulnerabilities from JSON Report
-            #   run: |
-            #                 REPORT="dependency-check-report/dependency-check-report.json"
-                        
-            #                 if [ ! -f "$REPORT" ]; then
-            #                   echo "No se encuentra el reporte $REPORT"
-            #                   exit 1
-            #                 fi
-                        
-            #                 echo "Resumen de vulnerabilidades:"
-            #                 jq -r '.dependencies[] | select(.vulnerabilities != null) | 
-            #                   "\(.fileName): \(.vulnerabilities[]?.name) (\(.vulnerabilities[]?.severity))"' "$REPORT"
-
-
-
-
-                          
+                         
             - name: Run OWASP Dependency-Check HTML
               uses: dependency-check/Dependency-Check_Action@main
               with:
@@ -235,8 +169,24 @@ jobs:
               run: |
                     echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
                     docker scout quickview
-                    docker scout cves
-              
+                    docker scout cves --output json > scout-report.json
+           
+                    CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="CRITICAL")] | length' scout-report.json)
+                    HIGH=$(jq '[.vulnerabilities[] | select(.severity=="HIGH")] | length' scout-report.json)
+                    MEDIUM=$(jq '[.vulnerabilities[] | select(.severity=="MEDIUM")] | length' scout-report.json)
+    
+                    echo "Vulnerabilidades CRÍTICAS encontradas: $CRITICAL"
+                    echo "Vulnerabilidades ALTAS encontradas: $HIGH"
+                    echo "Vulnerabilidades MEDIAS encontradas: $MEDIUM"
+                    
+                    TOTAL=$((CRITICAL + HIGH + MEDIUM))
+                    
+                    if [ "$TOTAL" -gt 0 ]; then
+                      echo "Pipeline fallido: Se encontraron $TOTAL vulnerabilidades (Críticas, Altas o Medias) en la imagen del proyecto."
+                      exit 1
+                    else
+                      echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
+                    fi   
           
 
 
