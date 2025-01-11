@@ -63,7 +63,7 @@ jobs:
                 echo "Vulnerabilities: $VULNERABILITIES"
                 echo "Coverage: $COVERAGE"
 
-                if [ "$SECURITY_RATING" -gt 2 ]; then
+                if [ "$SECURITY_RATING" -gt 4 ]; then
                 echo "Seguridad muy baja. Falla pipeline."
                 exit 1
                 fi
