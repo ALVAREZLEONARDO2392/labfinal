@@ -122,7 +122,28 @@ jobs:
                         else
                           echo "No se encuentra vulnerabilidades media-alta."
                         fi
+            - name: Subir informe (JSON)
+              uses: actions/upload-artifact@v3
+              with:
+                          name: dependency-check-report-json
+                          path: dependency-check-report/dependency-check-report.json
+            - name: Summarize Vulnerabilities from JSON Report
+              run: |
+                            REPORT="dependency-check-report/dependency-check-report.json"
+                        
+                            if [ ! -f "$REPORT" ]; then
+                              echo "No se encuentra el reporte $REPORT"
+                              exit 1
+                            fi
+                        
+                            echo "Resumen de vulnerabilidades:"
+                            jq -r '.dependencies[] | select(.vulnerabilities != null) | 
+                              "\(.fileName): \(.vulnerabilities[]?.name) (\(.vulnerabilities[]?.severity))"' "$REPORT"
 
+
+
+
+                          
             # - name: Run OWASP Dependency-Check HTML
             #   uses: dependency-check/Dependency-Check_Action@main
             #   with:
