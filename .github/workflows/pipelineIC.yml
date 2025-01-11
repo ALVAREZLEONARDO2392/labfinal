@@ -43,9 +43,17 @@ jobs:
                 echo "sonar.sources=." >> sonar-project.properties
                 echo "sonar.exclusions=**/node_modules/**" >> sonar-project.properties
                 echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
+            
+                 
             - name: Run SonarCloud Scanner
-              run: npx sonar-scanner
-        
+              run: |
+                npx sonar-scanner
+                EXIT_CODE=$(npx sonar-quality-gate-action@v2.1 --projectKey ALVAREZLEONARDO2392_labfinal --organization alvarezleonardo2392)
+                if [ "$EXIT_CODE" -ne 0 ]; then
+                  echo "SC QG FALLÓ. Salir..."
+                  exit 1
+                fi
+                
         Dependency-Check:
 
           runs-on: ubuntu-latest
