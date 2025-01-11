@@ -103,15 +103,15 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
 
-            - name: docker scout scan
+            - name: Install Docker Scout
               run: |
-                curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
-                sh install-scout.sh
-
-                echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
-                docker scout quickview
-                docker scout cves
+                    curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+                
+            - name: Run Docker Scout Scan
+              run: |
+                    echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+                    docker scout quickview
+                    docker scout cves
               
           
 
