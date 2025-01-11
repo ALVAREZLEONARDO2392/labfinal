@@ -189,19 +189,7 @@ jobs:
                                 exit 1
                               else
                                 echo "No se encontraron vulnerabilidades con severidad Media o Alta."
-                              fi
-                            
-
-
-
-          #  ###### art     
-          - name: Upload Dependency-Check Report
-          uses: actions/upload-artifact@v3
-          with:
-                name: dependency-check-report
-                path: dependency-check-report/dependency-check-report.html
-        
-            
+                              fi       
 
 
     
