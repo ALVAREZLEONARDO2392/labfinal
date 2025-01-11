@@ -45,7 +45,23 @@ jobs:
                 echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
             - name: Run SonarCloud Scanner
               run: npx sonar-scanner
-        
+
+            - name: Mirar reglas de sonar
+              run: |
+                
+                RESPONSE=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" \
+                  "https://sonarcloud.io/api/measures/component?component=ALVAREZLEONARDO2392_labfinal&metricKeys=security_rating,reliability_rating,bugs,vulnerabilities,code_smells,coverage")
+            
+                
+                SECURITY_RATING=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="security_rating").value')
+                RELIABILITY_RATING=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="reliability_rating").value')
+                VULNERABILITIES=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="vulnerabilities").value')
+                COVERAGE=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="coverage").value')
+            
+                echo "Security Rating: $SECURITY_RATING"
+                echo "Reliability Rating: $RELIABILITY_RATING"
+                echo "Vulnerabilities: $VULNERABILITIES"
+                echo "Coverage: $COVERAGE"
         Dependency-Check:
 
           runs-on: ubuntu-latest
