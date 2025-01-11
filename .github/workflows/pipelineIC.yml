@@ -88,20 +88,6 @@ jobs:
                 username: ${{ secrets.DOCKERHUB_USERNAME }}
                 password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-            - name: Extract metadata (tags, labels) for Docker
-              id: meta
-              uses: docker/metadata-action@v4
-              with:
-                  images: rene0311/my-docker-hub-repository
-                  tags: |
-                    type=ref,event=branch
-                    type=sha
-
-            - name: Debug image tags
-              
-              run: | 
-                          echo "Tags GENERADOS: ${{ steps.meta.outputs.tags }}"
-
             - name: Build Docker image
               id: build
               uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
@@ -112,24 +98,42 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
             
-            - name: Extract first tag
-              id: first_tag
-              run: echo "::set-output name=tag::$(echo '${{ steps.meta.outputs.tags }}' | cut -d',' -f1)"
-                
-            - name: Scan Docker image with Trivy
-              uses: aquasecurity/trivy-action@master
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v2.1.0
               with:
-                    image-ref: rene0311/my-docker-hub-repository:${{ steps.first_tag.outputs.tag }}
-                    format: 'table'
-                    exit-code: '1'
-                    ignore-unfixed: true
-
-            - name: Upload Trivy Report
-              uses: actions/upload-artifact@v3
+                    username: ${{ secrets.DOCKERHUB_USERNAME }}
+                    password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+            - name: Build and Push Docker Image
+              uses: docker/build-push-action@v4
               with:
-                    name: trivy-scan-report
-                    path: trivy-report.txt
-
+                    context: .
+                    tags: rene0311/my-docker-hub-repository:latest
+                    push: true
+          
+            - name: Docker Scout Quickview and CVEs
+              uses: docker/scout-action@v1
+              with:
+                    command: quickview,cves
+                    image: rene0311/my-docker-hub-repository:latest
+          
+            - name: Docker Scout SBOM
+              uses: docker/scout-action@v1
+              with:
+                    command: sbom
+                    image: rene0311/my-docker-hub-repository:latest
+                    output: sbom.json
+          
+            - name: Docker Scout Recommendations
+              uses: docker/scout-action@v1
+              with:
+                    command: recommendations
+                    image: rene0311/my-docker-hub-repository:latest
+          
+            - name: Upload Docker Scout SARIF Report
+              uses: github/codeql-action/upload-sarif@v2
+              with:
+                    sarif_file: scout.sarif
             # - name: Generate artifact attestation
             #   uses: actions/attest-build-provenance@v2
             #   with:
