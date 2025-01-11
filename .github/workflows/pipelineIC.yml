@@ -151,7 +151,7 @@ jobs:
                             path: '.'
                             format: 'HTML'
                             out: 'dependency-check-report'
-                            args: '--failOnCVSS 0'
+                            args: '--failOnCVSS 20'
                            
             - name: Analizar el informe HTML de Dependency-Check por severidad
               run: |
