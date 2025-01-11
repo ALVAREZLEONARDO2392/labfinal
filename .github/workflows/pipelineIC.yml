@@ -79,7 +79,7 @@ jobs:
           - name: Set up docker
             uses: docker-practice/actions-setup-docker@master
             with:
-              docker_version: '20.10.7'
+              docker_version: latest
           - name: Build docker image
             run: docker build -f Dockerfile -t myapp:latest .
 
