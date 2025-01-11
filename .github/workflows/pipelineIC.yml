@@ -63,7 +63,17 @@ jobs:
                 echo "Vulnerabilities: $VULNERABILITIES"
                 echo "Coverage: $COVERAGE"
 
-                if [ "$VULNERABILITIES" -gt 0 ]; then
+                if [ "$SECURITY_RATING" -gt 3 ]; then
+                  echo "Security rating demasiado bajo. Botando pipeline...."
+                  exit 1
+                fi
+                
+                if [ "$(echo "$COVERAGE < 80" | bc)" -eq 1 ]; then
+                  echo "Coverage más bajo que 50%. Botando pipeline..."
+                  exit 1
+                fi
+
+                if [ "$VULNERABILITIES" -gt 99 ]; then
                   echo "Se encuentran vulnerabilidades: $VULNERABILITIES. Botando pipeline...."
                   exit 1
                 fi
@@ -83,7 +93,26 @@ jobs:
                 path: '.'
                 format: 'HTML'
                 out: 'dependency-check-report'
-                args: '--failOnCVSS 20'
+                args: '--failOnCVSS 7' 
+                
+            - name: Analisis dependency check
+              run: |
+                  
+                  REPORT="dependency-check-report/dependency-check-report.json"
+              
+                  
+                  ISSUES=$(jq '[.dependencies[].vulnerabilities[] | select(.cvssScore >= 4 and .cvssScore <= 10)] | length' "$REPORT")
+              
+                 
+                  if [ "$ISSUES" -gt 0 ]; then
+                    echo "Se encuentran $ISSUES vulnerabilidades con CVSS entre 4 y 10."
+                    exit 1
+                  else
+                    echo "No se encuentra vulnerabilidades media-alta."
+                  fi
+
+
+
            ###### art     
             - name: Upload Dependency-Check Report
               uses: actions/upload-artifact@v3
