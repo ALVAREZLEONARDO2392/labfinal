@@ -106,7 +106,7 @@ jobs:
             - name: Analisis dependency check
               run: |
                       
-                      REPORT="dependency-check-report/dependency-check-report.json"
+                      REPORT="dependency-check-report/dependency-check-report.hmtl"
                   
                       
                       ISSUES=$(jq '[.dependencies[].vulnerabilities[] | select(.cvssScore >= 4 and .cvssScore <= 10)] | length' "$REPORT")
