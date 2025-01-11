@@ -91,11 +91,25 @@ jobs:
               with:
                 project: 'labfinal'
                 path: '.'
-                format: 'HTML'
+                format: 'json'
                 out: 'dependency-check-report'
                 args: '--failOnCVSS 7' 
                 
-
+            - name: Analisis dependency check
+              run: |
+                        
+                        REPORT="dependency-check-report/dependency-check-report.json"
+                    
+                        
+                        ISSUES=$(jq '[.dependencies[].vulnerabilities[] | select(.cvssScore >= 4 and .cvssScore <= 10)] | length' "$REPORT")
+                    
+                       
+                        if [ "$ISSUES" -gt 0 ]; then
+                          echo "Se encuentran $ISSUES vulnerabilidades con CVSS entre 4 y 10."
+                          exit 1
+                        else
+                          echo "No se encuentra vulnerabilidades media-alta."
+                        fi
 
            ###### art     
             - name: Upload Dependency-Check Report
@@ -103,21 +117,10 @@ jobs:
               with:
                   name: dependency-check-report
                   path: dependency-check-report/dependency-check-report.html
-            - name: Analisis dependency check
-              run: |
-                      
-                      REPORT="dependency-check-report/dependency-check-report.hmtl"
-                  
-                      
-                      ISSUES=$(jq '[.dependencies[].vulnerabilities[] | select(.cvssScore >= 4 and .cvssScore <= 10)] | length' "$REPORT")
-                  
-                     
-                      if [ "$ISSUES" -gt 0 ]; then
-                        echo "Se encuentran $ISSUES vulnerabilidades con CVSS entre 4 y 10."
-                        exit 1
-                      else
-                        echo "No se encuentra vulnerabilidades media-alta."
-                      fi
+            
+            
+
+
     
         push_to_registry:
           name: Push Docker image to Docker Hub
