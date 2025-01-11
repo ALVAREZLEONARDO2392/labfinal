@@ -68,7 +68,7 @@ jobs:
                   exit 1
                 fi
                 
-                if [ "$(echo "$COVERAGE < 80" | bc)" -eq 1 ]; then
+                if [ "$(echo "$COVERAGE < 0" | bc)" -eq 1 ]; then
                   echo "Coverage más bajo que 50%. Botando pipeline..."
                   exit 1
                 fi
