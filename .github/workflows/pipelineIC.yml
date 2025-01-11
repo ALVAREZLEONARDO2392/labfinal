@@ -62,6 +62,13 @@ jobs:
                 echo "Reliability Rating: $RELIABILITY_RATING"
                 echo "Vulnerabilities: $VULNERABILITIES"
                 echo "Coverage: $COVERAGE"
+
+                if [ "$SECURITY_RATING" -gt 2 ]; then
+                echo "Seguridad muy baja. Falla pipeline."
+                exit 1
+                fi
+
+          
         Dependency-Check:
 
           runs-on: ubuntu-latest
