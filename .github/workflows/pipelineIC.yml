@@ -222,4 +222,4 @@ jobs:
               run: |
                     docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:latest
             - name: Check running Docker containers
-              run: docker ps                     
+              run: docker ps1                     
