@@ -217,9 +217,9 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
             - name: Pull Docker image from Docker Hub
               run: |
-                    docker pull ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:latest
+                    docker pull ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:main
             - name: Run app in Docker container
               run: |
-                    docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:latest
+                    docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:main
             - name: Check running Docker containers
               run: docker ps                     
