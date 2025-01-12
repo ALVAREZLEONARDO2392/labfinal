@@ -202,6 +202,7 @@ jobs:
         #                 echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
         #               fi   
 
+        
         Self-hosted-docker-build-and-run:
           runs-on: self-hosted
               
