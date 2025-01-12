@@ -202,40 +202,24 @@ jobs:
                         echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
                       fi   
 
-        # deploy_minikube:
-        #       runs-on: ubuntu-latest
-        #       needs: push_to_registry
-        #       steps:
-        #       - name: Check out the code
-        #         uses: actions/checkout@v3
-
-        #       - name: Install Minikube
-        #         run: |
-        #               curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        #               chmod +x minikube
-        #               sudo mv minikube /usr/local/bin/
+        Self-hosted-docker-build-and-run:
+          runs-on: self-hosted
               
-        #       - name: Start Minikube
-        #         run: |
-        #               minikube start --driver=docker
-        #               minikube addons enable ingress
-
-        #       - name: Install kubectl
-        #         run: |
-        #               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        #               chmod +x kubectl
-        #               sudo mv kubectl /usr/local/bin/
-              
-        #       - name: Configure kubectl for Minikube
-        #         run: |
-        #               kubectl config use-context minikube
-                     
-        #       - name: Deploy to Minikube
-        #         run: |
-        #               kubectl create deployment my-app --image=rene0311/my-docker-hub-repository:latest
-        #               kubectl expose deployment my-app --type=NodePort --port=80
-        #               minikube service my-app --url
-
-
-
-
+          steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v2
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3.0.0
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+            - name: Pull Docker image from Docker Hub
+              run: |
+                    docker pull ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:latest
+            - name: Run app in Docker container
+              run: |
+                    docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:latest
+            - name: Check running Docker containers
+              run: docker ps                     
