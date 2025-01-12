@@ -170,27 +170,37 @@ jobs:
                     echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
                     docker scout quickview
                     docker scout cves --output json > scout-report.json
-                    
-                    if ! command -v jq &> /dev/null; then
-                      sudo apt-get update && sudo apt-get install -y jq
-                    fi
-                    
-                    CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="CRITICAL")] | length' scout-report.json)
-                    HIGH=$(jq '[.vulnerabilities[] | select(.severity=="HIGH")] | length' scout-report.json)
-                    MEDIUM=$(jq '[.vulnerabilities[] | select(.severity=="MEDIUM")] | length' scout-report.json)
-    
-                    echo "Vulnerabilidades CRÍTICAS encontradas: $CRITICAL"
-                    echo "Vulnerabilidades ALTAS encontradas: $HIGH"
-                    echo "Vulnerabilidades MEDIAS encontradas: $MEDIUM"
-                    
-                    TOTAL=$((CRITICAL + HIGH + MEDIUM))
-                    
-                    if [ "$TOTAL" -gt 0 ]; then
-                      echo "Pipeline fallido: Se encontraron $TOTAL vulnerabilidades (Críticas, Altas o Medias) en la imagen del proyecto."
-                      exit 1
-                    else
-                      echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
-                    fi   
+            
+            - name: Analizar el reporte JSON de Docker Scout
+              run: |
+                      echo "Procesando el archivo JSON de vulnerabilidades..."
+                      
+                      # Verificar si el archivo existe
+                      if [ ! -f scout-report.json ]; then
+                        echo "¡El archivo scout-report.json no existe!"
+                        exit 1
+                      fi       
+
+                      if ! command -v jq &> /dev/null; then
+                        sudo apt-get update && sudo apt-get install -y jq
+                      fi
+
+                      CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="CRITICAL")] | length' scout-report.json)
+                      HIGH=$(jq '[.vulnerabilities[] | select(.severity=="HIGH")] | length' scout-report.json)
+                      MEDIUM=$(jq '[.vulnerabilities[] | select(.severity=="MEDIUM")] | length' scout-report.json)
+      
+                      echo "Vulnerabilidades CRÍTICAS encontradas: $CRITICAL"
+                      echo "Vulnerabilidades ALTAS encontradas: $HIGH"
+                      echo "Vulnerabilidades MEDIAS encontradas: $MEDIUM"
+                      
+                      TOTAL=$((CRITICAL + HIGH + MEDIUM))
+                      
+                      if [ "$TOTAL" -gt 0 ]; then
+                        echo "Pipeline fallido: Se encontraron $TOTAL vulnerabilidades (Críticas, Altas o Medias) en la imagen del proyecto."
+                        exit 1
+                      else
+                        echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
+                      fi   
           
 
 
