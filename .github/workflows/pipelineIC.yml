@@ -3,209 +3,210 @@ name: workflow
 on:
   push:
     branches:
-      - main
+      - not_main
   pull_request:
     branches:
-      - main
+      - not_main
       
 jobs:
-        # SAST:
-        #   runs-on: ubuntu-24.04
+        SAST-SCA:
+          runs-on: ubuntu-24.04
           
-        #   steps:
+          steps:
             
-        #     - name: Checkout Code
-        #       uses: actions/checkout@v3
+            - name: Checkout Code
+              uses: actions/checkout@v3
       
            
-        #     - name: Set up Node.js
-        #       uses: actions/setup-node@v3
-        #       with:
-        #         node-version: '16' 
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                node-version: '16' 
       
            
-        #     - name: Install Dependencies
-        #       run: |
-        #         npm install 
-        #         if [ -d "./functions" ]; then
-        #          cd ./functions
-        #           npm install 
-        #         cd ..
-        #         fi
+            - name: Install Dependencies
+              run: |
+                npm install 
+                if [ -d "./functions" ]; then
+                 cd ./functions
+                  npm install 
+                cd ..
+                fi
       
             
-        #     - name: Configure SonarCloud Scanner
-        #       run: |
-        #         echo "sonar.projectKey=ALVAREZLEONARDO2392_labfinal" >> sonar-project.properties
-        #         echo "sonar.organization=alvarezleonardo2392" >> sonar-project.properties
-        #         echo "sonar.host.url=https://sonarcloud.io" >> sonar-project.properties
-        #         echo "sonar.login=${{ secrets.SONAR_TOKEN }}" >> sonar-project.properties
-        #         echo "sonar.sources=." >> sonar-project.properties
-        #         echo "sonar.exclusions=**/node_modules/**" >> sonar-project.properties
-        #         echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
-        #     - name: Run SonarCloud Scanner
-        #       run: npx sonar-scanner
+            - name: Configure SonarCloud Scanner
+              run: |
+                echo "sonar.projectKey=ALVAREZLEONARDO2392_labfinal" >> sonar-project.properties
+                echo "sonar.organization=alvarezleonardo2392" >> sonar-project.properties
+                echo "sonar.host.url=https://sonarcloud.io" >> sonar-project.properties
+                echo "sonar.login=${{ secrets.SONAR_TOKEN }}" >> sonar-project.properties
+                echo "sonar.sources=." >> sonar-project.properties
+                echo "sonar.exclusions=**/node_modules/**" >> sonar-project.properties
+                echo "sonar.javascript.packageManager=npm" >> sonar-project.properties
+            - name: Run SonarCloud Scanner
+              run: npx sonar-scanner
 
-        #     - name: Mirar reglas de sonar
-        #       run: |
+            - name: Mirar reglas de sonar
+              run: |
                 
-        #         RESPONSE=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" \
-        #           "https://sonarcloud.io/api/measures/component?component=ALVAREZLEONARDO2392_labfinal&metricKeys=security_rating,reliability_rating,bugs,vulnerabilities,code_smells,coverage")
+                RESPONSE=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" \
+                  "https://sonarcloud.io/api/measures/component?component=ALVAREZLEONARDO2392_labfinal&metricKeys=security_rating,reliability_rating,bugs,vulnerabilities,code_smells,coverage")
             
                 
-        #         SECURITY_RATING=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="security_rating").value')
-        #         RELIABILITY_RATING=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="reliability_rating").value')
-        #         VULNERABILITIES=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="vulnerabilities").value')
-        #         COVERAGE=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="coverage").value')
+                SECURITY_RATING=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="security_rating").value')
+                RELIABILITY_RATING=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="reliability_rating").value')
+                VULNERABILITIES=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="vulnerabilities").value')
+                COVERAGE=$(echo $RESPONSE | jq -r '.component.measures[] | select(.metric=="coverage").value')
             
-        #         echo "Security Rating: $SECURITY_RATING"
-        #         echo "Reliability Rating: $RELIABILITY_RATING"
-        #         echo "Vulnerabilities: $VULNERABILITIES"
-        #         echo "Coverage: $COVERAGE"
+                echo "Security Rating: $SECURITY_RATING"
+                echo "Reliability Rating: $RELIABILITY_RATING"
+                echo "Vulnerabilities: $VULNERABILITIES"
+                echo "Coverage: $COVERAGE"
 
-        #         if [ "$SECURITY_RATING" -gt 3 ]; then
-        #           echo "Security rating demasiado bajo. Botando pipeline...."
-        #           exit 1
-        #         fi
+                if [ "$SECURITY_RATING" -gt 3 ]; then
+                  echo "Security rating demasiado bajo. Botando pipeline...."
+                  exit 1
+                fi
                 
-        #         if [ "$(echo "$COVERAGE < 0" | bc)" -eq 1 ]; then
-        #           echo "Coverage más bajo que 50%. Botando pipeline..."
-        #           exit 1
-        #         fi
+                if [ "$(echo "$COVERAGE < 0" | bc)" -eq 1 ]; then
+                  echo "Coverage más bajo que 50%. Botando pipeline..."
+                  exit 1
+                fi
 
-        #         if [ "$VULNERABILITIES" -gt 99 ]; then
-        #           echo "Se encuentran vulnerabilidades: $VULNERABILITIES. Botando pipeline...."
-        #           exit 1
-        #         fi
+                if [ "$VULNERABILITIES" -gt 99 ]; then
+                  echo "Se encuentran vulnerabilidades: $VULNERABILITIES. Botando pipeline...."
+                  exit 1
+                fi
                          
-        #     - name: Run OWASP Dependency-Check HTML
-        #       uses: dependency-check/Dependency-Check_Action@main
-        #       with:
-        #                     project: 'labfinal'
-        #                     path: '.'
-        #                     format: 'HTML'
-        #                     out: 'dependency-check-report'
-        #                     args: '--failOnCVSS 20'
+            - name: Run OWASP Dependency-Check HTML
+              uses: dependency-check/Dependency-Check_Action@main
+              with:
+                            project: 'labfinal'
+                            path: '.'
+                            format: 'HTML'
+                            out: 'dependency-check-report'
+                            args: '--failOnCVSS 20'
             
-        #     - name: Upload Dependency-Check Report
-        #       uses: actions/upload-artifact@v3
-        #       with:
-        #                           name: dependency-check-report
-        #                           path: dependency-check-report/dependency-check-report.html
+            - name: Upload Dependency-Check Report
+              uses: actions/upload-artifact@v3
+              with:
+                                  name: dependency-check-report
+                                  path: dependency-check-report/dependency-check-report.html
                            
-        #     - name: Analizar el informe HTML de Dependency-Check por severidad
-        #       run: |
-        #                       REPORT="dependency-check-report/dependency-check-report.html"
+            # - name: Analizar el informe HTML de Dependency-Check por severidad
+            #   run: |
+            #                   REPORT="dependency-check-report/dependency-check-report.html"
                     
-        #                       # Verificar si el informe HTML fue generado
-        #                       if [ ! -f "$REPORT" ]; then
-        #                         echo "¡No se encontró el informe HTML de Dependency-Check!"
-        #                         exit 1
-        #                       fi
+            #                   # Verificar si el informe HTML fue generado
+            #                   if [ ! -f "$REPORT" ]; then
+            #                     echo "¡No se encontró el informe HTML de Dependency-Check!"
+            #                     exit 1
+            #                   fi
                     
-        #                       echo "Buscando vulnerabilidades con severidad Media y Alta en el informe HTML..."
+            #                   echo "Buscando vulnerabilidades con severidad Media y Alta en el informe HTML..."
                     
-        #                       # Contar vulnerabilidades con severidad Media
-        #                       MEDIUM_ISSUES=$(grep -o "Medium" "$REPORT" | wc -l)
+            #                   # Contar vulnerabilidades con severidad Media
+            #                   MEDIUM_ISSUES=$(grep -o "Medium" "$REPORT" | wc -l)
                     
-        #                       # Contar vulnerabilidades con severidad Alta
-        #                       HIGH_ISSUES=$(grep -o "High" "$REPORT" | wc -l)
+            #                   # Contar vulnerabilidades con severidad Alta
+            #                   HIGH_ISSUES=$(grep -o "High" "$REPORT" | wc -l)
                     
-        #                       # Sumar el total de vulnerabilidades encontradas
-        #                       TOTAL_ISSUES=$((MEDIUM_ISSUES + HIGH_ISSUES))
+            #                   # Sumar el total de vulnerabilidades encontradas
+            #                   TOTAL_ISSUES=$((MEDIUM_ISSUES + HIGH_ISSUES))
                     
-        #                       echo "Se encontraron $MEDIUM_ISSUES vulnerabilidades con severidad Media."
-        #                       echo "Se encontraron $HIGH_ISSUES vulnerabilidades con severidad Alta."
+            #                   echo "Se encontraron $MEDIUM_ISSUES vulnerabilidades con severidad Media."
+            #                   echo "Se encontraron $HIGH_ISSUES vulnerabilidades con severidad Alta."
                     
-        #                       # Fallar el pipeline si se encuentran vulnerabilidades con severidad Media o Alta
-        #                       if [ "$TOTAL_ISSUES" -gt 0 ]; then
-        #                         echo "Pipeline fallido: Se encontraron $TOTAL_ISSUES vulnerabilidades con severidad Media o Alta."
-        #                         exit 1
-        #                       else
-        #                         echo "No se encontraron vulnerabilidades con severidad Media o Alta."
-        #                       fi       
+            #                   # Fallar el pipeline si se encuentran vulnerabilidades con severidad Media o Alta
+            #                   if [ "$TOTAL_ISSUES" -gt 0 ]; then
+            #                     echo "Pipeline fallido: Se encontraron $TOTAL_ISSUES vulnerabilidades con severidad Media o Alta."
+            #                     exit 1
+            #                   else
+            #                     echo "No se encontraron vulnerabilidades con severidad Media o Alta."
+            #                   fi       
 
 
     
-        # push_to_registry:
-        #   name: Push Docker image to Docker Hub
-        #   runs-on: ubuntu-latest
-        #   permissions:
-        #     packages: write
-        #     contents: read
-        #     attestations: write
-        #     id-token: write
-        #   steps:
-        #     - name: Check out the repo
-        #       uses: actions/checkout@v4
+        push_to_registry:
+          name: Push Docker image to Docker Hub
+          needs: SAST-SCA
+          runs-on: ubuntu-latest
+          permissions:
+            packages: write
+            contents: read
+            attestations: write
+            id-token: write
+          steps:
+            - name: Check out the repo
+              uses: actions/checkout@v4
 
-        #     - name: Log in to Docker Hub
-        #       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        #       with:
-        #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+            - name: Log in to Docker Hub
+              uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+              with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-        #     - name: Extract metadata (tags, labels) for Docker
-        #       id: meta
-        #       uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        #       with:
-        #         images: rene0311/my-docker-hub-repository
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+              with:
+                images: rene0311/my-docker-hub-repository
 
-        #     - name: Build Docker image
-        #       id: build
-        #       uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
-        #       with:
-        #           context: .
-        #           file: ./Dockerfile
-        #           push: true
-        #           tags: ${{ steps.meta.outputs.tags }}
-        #           labels: ${{ steps.meta.outputs.labels }}
+            - name: Build Docker image
+              id: build
+              uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+              with:
+                  context: .
+                  file: ./Dockerfile
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
 
-        #     - name: Install Docker Scout
-        #       run: |
-        #             curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+            - name: Install Docker Scout
+              run: |
+                    curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
                 
-        #     - name: Run Docker Scout Scan
-        #       run: |
-        #             echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-        #             docker scout quickview
-        #             docker scout cves --output json > scout-report.json
+            - name: Run Docker Scout Scan
+              run: |
+                    echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+                    docker scout quickview
+                    docker scout cves --output json > scout-report.json
             
-        #     - name: Analizar el reporte JSON de Docker Scout
-        #       run: |
-        #               echo "Procesando el archivo JSON de vulnerabilidades..."
+            - name: Analizar el reporte JSON de Docker Scout
+              run: |
+                      echo "Procesando el archivo JSON de vulnerabilidades..."
                       
-        #               # Verificar si el archivo existe
-        #               if [ ! -f scout-report.json ]; then
-        #                 echo "¡El archivo scout-report.json no existe!"
-        #                 exit 1
-        #               fi       
+                      # Verificar si el archivo existe
+                      if [ ! -f scout-report.json ]; then
+                        echo "¡El archivo scout-report.json no existe!"
+                        exit 1
+                      fi       
 
-        #               if ! command -v jq &> /dev/null; then
-        #                 sudo apt-get update && sudo apt-get install -y jq
-        #               fi
+                      if ! command -v jq &> /dev/null; then
+                        sudo apt-get update && sudo apt-get install -y jq
+                      fi
 
-        #               CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="CRITICAL")] | length' scout-report.json)
-        #               HIGH=$(jq '[.vulnerabilities[] | select(.severity=="HIGH")] | length' scout-report.json)
-        #               MEDIUM=$(jq '[.vulnerabilities[] | select(.severity=="MEDIUM")] | length' scout-report.json)
+                      CRITICAL=$(jq '[.vulnerabilities[] | select(.severity=="CRITICAL")] | length' scout-report.json)
+                      HIGH=$(jq '[.vulnerabilities[] | select(.severity=="HIGH")] | length' scout-report.json)
+                      MEDIUM=$(jq '[.vulnerabilities[] | select(.severity=="MEDIUM")] | length' scout-report.json)
       
-        #               echo "Vulnerabilidades CRÍTICAS encontradas: $CRITICAL"
-        #               echo "Vulnerabilidades ALTAS encontradas: $HIGH"
-        #               echo "Vulnerabilidades MEDIAS encontradas: $MEDIUM"
+                      echo "Vulnerabilidades CRÍTICAS encontradas: $CRITICAL"
+                      echo "Vulnerabilidades ALTAS encontradas: $HIGH"
+                      echo "Vulnerabilidades MEDIAS encontradas: $MEDIUM"
                       
-        #               TOTAL=$((CRITICAL + HIGH + MEDIUM))
+                      TOTAL=$((CRITICAL + HIGH + MEDIUM))
                       
-        #               if [ "$TOTAL" -gt 0 ]; then
-        #                 echo "Pipeline fallido: Se encontraron $TOTAL vulnerabilidades (Críticas, Altas o Medias) en la imagen del proyecto."
-        #                 exit 1
-        #               else
-        #                 echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
-        #               fi   
+                      if [ "$TOTAL" -gt 0 ]; then
+                        echo "Pipeline fallido: Se encontraron $TOTAL vulnerabilidades (Críticas, Altas o Medias) en la imagen del proyecto."
+                        exit 1
+                      else
+                        echo "No se encontraron vulnerabilidades Críticas, Altas o Medias en la imagen del proyecto."
+                      fi   
 
-        
-        Self-hosted-docker-build-and-run:
+
+        sh-docker:
           runs-on: self-hosted
-              
+          needs: push_to_registry  
           steps:
             - name: Checkout repository
               uses: actions/checkout@v3
@@ -218,9 +219,9 @@ jobs:
                   password: ${{ secrets.DOCKER_PASSWORD }}
             - name: Pull Docker image from Docker Hub
               run: |
-                    docker pull ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:main
+                    docker pull ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:not_main
             - name: Run app in Docker container
               run: |
-                    docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:main
+                    docker run -d -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/my-docker-hub-repository:not_main
             - name: Check running Docker containers
               run: docker ps                     
